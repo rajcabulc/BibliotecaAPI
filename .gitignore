@@ -361,3 +361,7 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# Archivos de configuración específicos de ASP.NET Core
+appsettings.json    # Configuración de entorno (puede contener secretos, no agregar al repo)
+appsettings.*.json  # Configuración para diferentes entornos (Desarrollo, Producción, etc.)
