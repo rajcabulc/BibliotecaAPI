@@ -1,5 +1,5 @@
 ﻿using BibliotecaAPI.Models;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,9 +9,9 @@ namespace BibliotecaAPI.Controllers
     [ApiController]
     public class AutorController : ControllerBase
     {
-        private readonly BibliotecaContext _context;
+        private readonly DataContext _context;
 
-        public AutorController(BibliotecaContext context)
+        public AutorController(DataContext context)
         {
             _context = context;
         }
@@ -20,6 +20,7 @@ namespace BibliotecaAPI.Controllers
         [Route("listar")]
         public async Task<ActionResult<IEnumerable<Autor>>> ListaAutor()
         {
+            // Generando listado
             var autores = await _context.Autores.ToListAsync();
 
             return Ok(autores);
@@ -29,7 +30,8 @@ namespace BibliotecaAPI.Controllers
         [Route("ver")]
         public async Task<IActionResult> VerAutor(int id)
         {
-            Autor autores = await _context.Autores.FindAsync(id);
+            // Buscando el registro por el id
+            Autor? autores = await _context.Autores.FindAsync(id);
 
             if (autores == null)
                 return NotFound("El Registro no existe.");
@@ -37,20 +39,24 @@ namespace BibliotecaAPI.Controllers
             return Ok(autores);
         }
 
+        [Authorize] // haciendo que este metodo necesite que el usuario este logeado
         [HttpPost]
         [Route("crear")]
         public async Task<IActionResult>CrearAutor(Autor autor)
         {
+            // agregando datos para el nuevo registro y guardando
             await _context.Autores.AddAsync(autor);
             await _context.SaveChangesAsync();
 
             return Ok();
         }
 
+        [Authorize] // haciendo que este metodo necesite que el usuario este logeado
         [HttpPut]
         [Route("actualizar")]
         public async Task<IActionResult> ActualizarAutor(int id, Autor autor)
         {
+            // buscando el registro y validando que exista antes de actualizar
             var autorExistente = await _context.Autores.FindAsync(id);
 
             if (autorExistente == null)
@@ -64,10 +70,12 @@ namespace BibliotecaAPI.Controllers
             return Ok();
         }
 
+        [Authorize] // haciendo que este metodo necesite que el usuario este logeado
         [HttpDelete]
         [Route("eliminar")]
         public async Task<IActionResult> EliminarProducto(int id)
         {
+            // buscando el registro y validando que exista antes de eliminar
             var autorDel = await _context.Autores.FindAsync(id);
 
             if (autorDel == null)
